@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kerisos / Meilah / Kinim / Tamid / Midos — Workflow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#f5f2eb; --surface:#fffdf8; --border:#ddd8cc; --text:#1a1814; --text-muted:#6b6660; --shadow:0 1px 3px rgba(0,0,0,0.08); }
+  *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  header { background:var(--surface); border-bottom:1.5px solid var(--border); padding:1rem 2rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.75rem; position:sticky; top:0; z-index:100; box-shadow:var(--shadow); }
+  .logo { font-family:'Frank Ruhl Libre',serif; font-size:1.4rem; font-weight:700; color:var(--text); }
+  .logo span { color:#e74c3c; }
+  .header-right { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .stats-pill { background:var(--bg); border:1px solid var(--border); border-radius:999px; padding:4px 10px; font-size:12px; color:var(--text-muted); }
+  .stats-pill strong { color:var(--text); }
+  input[type=text],select { border:1px solid var(--border); background:var(--surface); color:var(--text); border-radius:8px; padding:6px 10px; font-family:'DM Sans',sans-serif; font-size:13px; outline:none; }
+  input[type=text]:focus,select:focus { border-color:#7b1fa2; }
+  .header-links { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:0.5rem 2rem; background:#f0ece3; border-bottom:1px solid var(--border); }
+  .link-btn { font-size:12px; font-weight:600; padding:5px 12px; border-radius:7px; border:1.5px solid #7a5a30; color:#7a5a30; background:var(--surface); text-decoration:none; transition:background 0.1s,color 0.1s; white-space:nowrap; }
+  .link-btn:hover { background:#7a5a30; color:#fff; }
+  .link-btn.small { font-size:11px; padding:4px 9px; border-color:#95a5a6; color:#555; }
+  .link-btn.small:hover { background:#95a5a6; color:#fff; }
+  .link-btn.temurah { border-color:#2471a3; color:#2471a3; }
+  .link-btn.temurah:hover { background:#2471a3; color:#fff; }
+  .legend { display:flex; flex-wrap:wrap; gap:8px; padding:0.75rem 2rem; background:var(--surface); border-bottom:1px solid var(--border); font-size:11px; align-items:center; }
+  .legend-section { display:flex; flex-wrap:wrap; gap:5px; align-items:center; }
+  .legend-title { font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-right:3px; }
+  .legend-item { display:flex; align-items:center; gap:4px; color:var(--text-muted); }
+  .legend-dot { width:10px; height:10px; border-radius:3px; flex-shrink:0; }
+  .legend-divider { width:1px; height:18px; background:var(--border); margin:0 8px; }
+  .sync-bar { padding:5px 2rem; font-size:11px; color:var(--text-muted); background:var(--bg); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; }
+  .sync-dot { width:7px; height:7px; border-radius:50%; background:#aaa; flex-shrink:0; transition:background 0.3s; }
+  .sync-dot.live { background:#1db954; }
+  .sync-dot.saving { background:#ffa040; animation:pulse 0.6s infinite alternate; }
+  .sync-dot.error { background:#e74c3c; }
+  @keyframes pulse { from{opacity:1} to{opacity:0.3} }
+  .masechta-tabs { display:flex; gap:4px; padding:0.75rem 2rem 0; background:var(--surface); border-bottom:1px solid var(--border); flex-wrap:wrap; }
+  .tab { font-family:'Frank Ruhl Libre',serif; font-size:15px; font-weight:700; padding:7px 18px; border-radius:8px 8px 0 0; border:1.5px solid var(--border); border-bottom:none; cursor:pointer; background:var(--bg); color:var(--text-muted); transition:all 0.1s; user-select:none; }
+  .tab.active { background:var(--surface); color:var(--text); margin-bottom:-1px; }
+  .tab:hover:not(.active) { background:#eee9de; }
+  main { padding:1.5rem 2rem; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:12px; }
+  .card { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:var(--shadow); }
+  .card-main { cursor:pointer; transition:background 0.1s; user-select:none; }
+  .card-main:hover { background:#f9f6ef; }
+  .card-main:active { background:#f0ece3; }
+  .card-header { padding:8px 12px 6px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .amud-label { font-family:'Frank Ruhl Libre',serif; font-size:15px; font-weight:700; color:var(--text); }
+  .stage-badge { font-size:9px; font-weight:600; padding:2px 6px; border-radius:999px; color:#fff; letter-spacing:0.02em; text-transform:uppercase; white-space:nowrap; }
+  .card-body { padding:8px 12px 10px; }
+  .progress-track { height:4px; background:var(--border); border-radius:2px; overflow:hidden; margin-bottom:6px; }
+  .progress-fill { height:100%; border-radius:2px; transition:width 0.25s ease; }
+  .stage-dots { display:flex; gap:3px; flex-wrap:wrap; }
+  .dot { width:9px; height:9px; border-radius:2px; border:1px solid var(--border); background:var(--bg); flex-shrink:0; }
+  .graphics-section { border-top:2px dashed var(--border); background:#f2efe8; padding:8px 10px; }
+  .graphics-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  .graphics-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); }
+  .add-graphic-btn { font-size:10px; font-weight:600; color:#7b1fa2; background:none; border:1px solid #7b1fa2; border-radius:6px; padding:2px 7px; cursor:pointer; transition:background 0.1s,color 0.1s; }
+  .add-graphic-btn:hover { background:#7b1fa2; color:#fff; }
+  .graphic-row { display:flex; align-items:center; gap:5px; margin-bottom:5px; padding:5px 7px; background:var(--surface); border:1px solid var(--border); border-radius:8px; }
+  .graphic-row:last-child { margin-bottom:0; }
+  .graphic-num { font-size:10px; font-weight:700; color:var(--text-muted); min-width:18px; flex-shrink:0; }
+  .graphic-advance { display:flex; align-items:center; gap:5px; flex:1; cursor:pointer; user-select:none; transition:background 0.1s; border-radius:5px; padding:2px 3px; }
+  .graphic-advance:hover { background:#eee9de; }
+  .graphic-badge { font-size:9px; font-weight:600; padding:2px 5px; border-radius:999px; color:#fff; white-space:nowrap; flex:1; text-align:center; }
+  .graphic-dots { display:flex; gap:2px; flex-shrink:0; }
+  .gdot { width:7px; height:7px; border-radius:2px; border:1px solid var(--border); background:var(--bg); flex-shrink:0; }
+  .remove-graphic-btn { font-size:11px; font-weight:700; color:#e74c3c; background:none; border:1px solid #e74c3c; border-radius:5px; padding:1px 5px; cursor:pointer; flex-shrink:0; line-height:1.4; transition:background 0.1s,color 0.1s; }
+  .remove-graphic-btn:hover { background:#e74c3c; color:#fff; }
+  .no-results,.loading-overlay { grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted); font-size:15px; }
+  @media(max-width:600px) { header,main{padding-left:1rem;padding-right:1rem} .legend,.sync-bar,.header-links,.masechta-tabs{padding-left:1rem;padding-right:1rem} .grid{grid-template-columns:1fr;gap:10px} }
+  .legend { flex-direction:column; align-items:flex-start; gap:6px; }
+  .legend-sub { font-weight:400; text-transform:none; letter-spacing:0; margin-left:4px; }
+  .section-divider { grid-column:1/-1; display:flex; align-items:center; gap:10px; font-size:12px; font-weight:700; color:var(--text-muted); margin-top:6px; }
+  .section-divider:first-child { margin-top:0; }
+  .section-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+  .section-divider .wf-tag { text-transform:none; letter-spacing:0; }
+  .wf-tag { font-size:9px; font-weight:700; padding:1px 6px; border-radius:999px; border:1px solid #95a5a6; color:#555; background:var(--bg); }
+  .card.old-wf { border-style:dashed; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">קדשים · <span>Workflow</span></div>
+  <div class="header-right">
+    <div class="stats-pill" id="statsBar">Loading…</div>
+    <input type="text" id="search" placeholder="Search amud…" style="width:130px">
+    <select id="filterStatus"><option value="">All</option></select>
+  </div>
+</header>
+
+<div class="header-links">
+  <a class="link-btn temurah" href="https://mp-alehz.github.io/Temurah/" target="_blank">Temurah Workflow</a>
+  <a class="link-btn" href="https://alehzayis.sharepoint.com/sites/info/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2Finfo%2FShared%20Documents%2FAZ%2D26875&amp;p=true&amp;ga=1" target="_blank">AZ-26875 Sharepoint</a>
+  <a class="link-btn" href="https://alehzayis.sharepoint.com/:f:/s/info/IgDbQka0kH_CT7lW1HdutAvFAb-KiPBxcuNdarMw7AJatys?e=VYDgMW" target="_blank">Graphics</a>
+  <a class="link-btn small" href="https://alehzayis.sharepoint.com/:f:/s/info/IgBt0BaBdVO6RrHmK3SJ9IWLAVSYm2i1KA8hIMkUQMB9a-o?e=OmdVKC" target="_blank">Writers</a>
+  <a class="link-btn small" href="https://alehzayis.sharepoint.com/:f:/s/info/IgAgRBKNTxUCS50o_NndlPwdAd8wn0S0XcQkgNHl95AwwOk?e=Uvc37G" target="_blank">Editors</a>
+  <a class="link-btn small" href="https://alehzayis.sharepoint.com/:f:/s/info/IgBu6SNFgMcXTKL3I5tbc4umAZzlDheW3CH2xfqplbxLVJA?e=IEVZ0U" target="_blank">Mevakrim</a>
+  <a class="link-btn small" href="https://alehzayis.sharepoint.com/:f:/s/info/IgCindJhgwAoSaKPlk-iiBG0ATaINL2Bs-9MLcrKk8pLQh0?e=ijkdkY" target="_blank">Proofreading</a>
+</div>
+
+<div class="legend" id="legend"></div>
+
+<div class="sync-bar">
+  <div class="sync-dot" id="syncDot"></div>
+  <span id="syncMsg">Connecting…</span>
+</div>
+
+<div class="masechta-tabs" id="tabs"></div>
+
+<main>
+  <div class="grid" id="grid"><div class="loading-overlay">Loading…</div></div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDBroJum2yyXz1HyyeWCxRHUwlvt4VGMy8",
+  authDomain: "chullin-workflow.firebaseapp.com",
+  databaseURL: "https://chullin-workflow-default-rtdb.firebaseio.com",
+  projectId: "chullin-workflow",
+  storageBucket: "chullin-workflow.firebasestorage.app",
+  messagingSenderId: "1006486263720",
+  appId: "1:1006486263720:web:12a12c96e7fd3d9cdcef9d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+/* ---------- Workflows ----------
+   Each amud follows exactly one workflow, fixed by where it sits (see MASECHTOT).
+   Saved stage numbers are positions in that amud's own list, so never reorder a
+   list once the team has started clicking — add a migration instead. */
+const WORKFLOWS = {
+  nw: {
+    label: 'New workflow',
+    stages: [
+      {name:"Open",        color:"#e74c3c"},
+      {name:"Generated",   color:"#ffa040"},
+      {name:"Edited",      color:"#8b6348"},
+      {name:"Reviewed",    color:"#9b4f96"},
+      {name:"Edited 2",    color:"#1a54a8"},
+      {name:"Mevukar",     color:"#7b1fa2"},
+      {name:"Kramer",      color:"#607d8b"},
+      {name:"Post Kramer", color:"#00bcd4"},
+      {name:"Edited 3",    color:"#e91e63"},
+      {name:"Review 2",    color:"#f9e000"},
+      {name:"Proofread",   color:"#a9db5e"},
+      {name:"Check",       color:"#00695c"},
+      {name:"Final",       color:"#1db954"}
+    ]
+  },
+  ow: {
+    label: 'Old workflow',
+    stages: [
+      {name:"Open",        color:"#e74c3c"},
+      {name:"Written",     color:"#ffa040"},
+      {name:"Run",         color:"#9b4f96"},
+      {name:"Edited",      color:"#8b6348"},
+      {name:"Mevukar",     color:"#7b1fa2"},
+      {name:"Kramer",      color:"#607d8b"},
+      {name:"Post Kramer", color:"#00bcd4"},
+      {name:"Edited 2",    color:"#1a54a8"},
+      {name:"Mevukar 2",   color:"#f9e000"},
+      {name:"Proofread",   color:"#a9db5e"},
+      {name:"Closed",      color:"#1db954"}
+    ]
+  }
+};
+
+const GRAPHIC_STAGES = [
+  {name:"None",        color:"#e74c3c"},
+  {name:"Requested",   color:"#ffa040"},
+  {name:"Ordered",     color:"#8b6348"},
+  {name:"Rcvd & Fwd",  color:"#7b1fa2"},
+  {name:"Adjustments", color:"#607d8b"},
+  {name:"To Border",   color:"#00bcd4"},
+  {name:"Received",    color:"#1a54a8"},
+  {name:"Reviewed",    color:"#a9db5e"},
+  {name:"Uploaded",    color:"#1db954"}
+];
+
+/* Build an amud list from a start amud to an end amud.
+   splits: amudim where a perek ends mid-amud. Give a plain label ('8b') for a
+   two-way split, or {amud:'33a', parts:3} when more than one perek ends there. */
+function buildRange(startDaf, startSide, endDaf, endSide, splits, workflow) {
+  const parts = {};
+  (splits || []).forEach(s => { if (typeof s === 'string') parts[s] = 2; else parts[s.amud] = s.parts; });
+  const list = [];
+  function push(label) {
+    const n = parts[label] || 1;
+    if (n === 1) list.push({ id:label, wf:workflow });
+    else for (let i = 1; i <= n; i++) list.push({ id:label+i, wf:workflow });
+  }
+  for (let d = startDaf; d <= endDaf; d++) {
+    if (!(d === startDaf && startSide === 'b')) push(d+'a');
+    if (d === endDaf && endSide === 'a') break;
+    push(d+'b');
+  }
+  return list;
+}
+
+/* Splits come from the perek breaks (הדרן עלך) in the mdy-library menukad text
+   of record. Kinim and Midos have no text in the library yet, so they are not split. */
+const MASECHTOT = [
+  { key:'kerisos_nw', label:'כריתות', name:'Kerisos',
+    amudim: buildRange(2,'a',14,'b',['8b','11b'],'nw')
+      .concat(buildRange(15,'a',28,'b',['17a','20b','23b'],'ow')) },
+  { key:'meilah_nw',  label:'מעילה', name:'Meilah',
+    amudim: buildRange(2,'a',22,'a',['8a','10b','18a','20a'],'nw') },
+  { key:'kinim_nw',   label:'קינים', name:'Kinim',
+    amudim: buildRange(22,'a',25,'a',[],'nw') },
+  { key:'tamid_nw',   label:'תמיד', name:'Tamid',
+    amudim: buildRange(25,'b',33,'b',['28b','30a','30b','32b','33a'],'nw') },
+  { key:'midos_nw',   label:'מידות', name:'Midos',
+    amudim: buildRange(34,'a',37,'b',[],'nw') }
+];
+
+/* Kinim starts at 22a, which is also Meilah's last amud — they are kept separate in the DB. */
+
+let currentKey = MASECHTOT[0].key;
+let state = {};      /* state[masechtaKey][amud] = {stage, graphics:[]} */
+let listening = {};
+
+function masechta(key) { return MASECHTOT.find(m => m.key === key); }
+function amudInfo(key, id) { return masechta(key).amudim.find(a => a.id === id); }
+function stagesFor(key, id) { return WORKFLOWS[amudInfo(key, id).wf].stages; }
+function wfRange(m, wf) {
+  const list = m.amudim.filter(a => a.wf === wf);
+  return list.length ? list[0].id + '–' + list[list.length-1].id : '';
+}
+
+function getS(key, amud) {
+  if (!state[key]) state[key] = {};
+  if (!state[key][amud]) state[key][amud] = { stage:0, graphics:[0] };
+  if (!state[key][amud].graphics || !state[key][amud].graphics.length) state[key][amud].graphics = [0];
+  return state[key][amud];
+}
+
+function syncStatus(status, msg) {
+  document.getElementById('syncDot').className = 'sync-dot ' + status;
+  document.getElementById('syncMsg').textContent = msg;
+}
+
+function saveAmud(key, amud) {
+  syncStatus('saving','Saving\u2026');
+  set(ref(db, key + '/' + amud), state[key][amud])
+    .then(()=>syncStatus('live','Live \u2014 all changes saved'))
+    .catch(()=>syncStatus('error','Save failed \u2014 check connection'));
+}
+
+function advanceMain(key, amud) {
+  const s = getS(key, amud), n = stagesFor(key, amud).length;
+  s.stage = (s.stage + 1) % n;
+  renderGrid(); saveAmud(key, amud);
+}
+function advanceGraphic(key, amud, gi) {
+  const s = getS(key, amud);
+  s.graphics[gi] = (s.graphics[gi] + 1) % GRAPHIC_STAGES.length;
+  renderGrid(); saveAmud(key, amud);
+}
+function addGraphic(key, amud) {
+  getS(key, amud).graphics.push(0);
+  renderGrid(); saveAmud(key, amud);
+}
+function removeGraphic(key, amud, gi) {
+  if (gi === 0) return;
+  getS(key, amud).graphics.splice(gi, 1);
+  renderGrid(); saveAmud(key, amud);
+}
+
+function legendItems(list) {
+  return list.map(s=>'<div class="legend-item"><div class="legend-dot" style="background:'+s.color+'"></div>'+s.name+'</div>').join('');
+}
+function buildLegend() {
+  const m = masechta(currentKey);
+  const wfs = ['nw','ow'].filter(w => m.amudim.some(a => a.wf === w));
+  let html = wfs.map(w => {
+    const sub = wfs.length > 1 ? '<span class="legend-sub">('+m.name+' '+wfRange(m,w)+')</span>' : '';
+    return '<div class="legend-section"><span class="legend-title">'+(wfs.length > 1 ? WORKFLOWS[w].label : 'Text')+':'+sub+'</span>'+legendItems(WORKFLOWS[w].stages)+'</div>';
+  }).join('');
+  html += '<div class="legend-section"><span class="legend-title">Graphics:</span>'+legendItems(GRAPHIC_STAGES)+'</div>';
+  document.getElementById('legend').innerHTML = html;
+}
+
+function buildFilter() {
+  const m = masechta(currentKey);
+  const wfs = ['nw','ow'].filter(w => m.amudim.some(a => a.wf === w));
+  let html = '<option value="">All</option>';
+  wfs.forEach(w => {
+    const opts = WORKFLOWS[w].stages.map((s,i) => '<option value="'+w+':'+i+'">'+s.name+'</option>').join('');
+    html += wfs.length > 1 ? '<optgroup label="'+WORKFLOWS[w].label+' ('+wfRange(m,w)+')">'+opts+'</optgroup>' : opts;
+  });
+  document.getElementById('filterStatus').innerHTML = html;
+}
+
+function buildTabs() {
+  document.getElementById('tabs').innerHTML = MASECHTOT.map(m =>
+    '<div class="tab'+(m.key===currentKey?' active':'')+'" data-key="'+m.key+'">'+m.label+'</div>'
+  ).join('');
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      currentKey = t.dataset.key;
+      buildTabs(); buildLegend(); buildFilter();
+      listen(currentKey);
+      renderGrid();
+    });
+  });
+}
+
+function listen(key) {
+  if (listening[key]) return;
+  listening[key] = true;
+  const m = masechta(key);
+  onValue(ref(db, key), (snap) => {
+    const data = snap.val() || {};
+    if (!state[key]) state[key] = {};
+    m.amudim.forEach(a => {
+      const d = data[a.id], max = WORKFLOWS[a.wf].stages.length - 1;
+      if (d !== undefined) {
+        state[key][a.id] = {
+          stage: Math.min(Number(d.stage || 0), max),
+          graphics: Array.isArray(d.graphics) ? d.graphics.map(Number) : [0]
+        };
+      } else {
+        state[key][a.id] = { stage:0, graphics:[0] };
+      }
+    });
+    syncStatus('live','Live \u2014 all changes saved');
+    if (currentKey === key) renderGrid();
+  }, () => syncStatus('error','Cannot read the database \u2014 check connection'));
+}
+
+function renderStats() {
+  const m = masechta(currentKey);
+  let closed=0, open=0;
+  m.amudim.forEach(a => {
+    const s = getS(currentKey, a.id);
+    if (s.stage === WORKFLOWS[a.wf].stages.length - 1) closed++;
+    else if (s.stage === 0) open++;
+  });
+  const inprog = m.amudim.length - closed - open;
+  document.getElementById('statsBar').innerHTML =
+    'Total: <strong>'+m.amudim.length+'</strong> &nbsp;|&nbsp; Open: <strong>'+open+'</strong> &nbsp;|&nbsp; In progress: <strong>'+inprog+'</strong> &nbsp;|&nbsp; Done: <strong style="color:#1db954">'+closed+'</strong>';
+}
+
+function cardHTML(a) {
+  const key = currentKey, amud = a.id;
+  const STAGES = WORKFLOWS[a.wf].stages;
+  const s = getS(key, amud), si = s.stage, stage = STAGES[si];
+  const pct = si === 0 ? 0 : Math.round((si/(STAGES.length-1))*100);
+  const dots = STAGES.slice(1).map((ms,i) =>
+    '<div class="dot" style="'+(si>i ? 'background:'+STAGES[i+1].color+';border-color:'+STAGES[i+1].color : '')+'"></div>'
+  ).join('');
+  const graphicsHTML = s.graphics.map((gStage, gi) => {
+    const gs = GRAPHIC_STAGES[gStage] || GRAPHIC_STAGES[0];
+    const gdots = GRAPHIC_STAGES.slice(1).map((x,i) =>
+      '<div class="gdot" style="'+(gStage>i ? 'background:'+GRAPHIC_STAGES[i+1].color+';border-color:'+GRAPHIC_STAGES[i+1].color : '')+'"></div>'
+    ).join('');
+    const removeBtn = gi>0
+      ? '<button class="remove-graphic-btn" data-key="'+key+'" data-amud="'+amud+'" data-gi="'+gi+'" title="Remove">&times;</button>'
+      : '';
+    return '<div class="graphic-row">'
+      +'<span class="graphic-num">G'+(gi+1)+'</span>'
+      +'<div class="graphic-advance" data-key="'+key+'" data-amud="'+amud+'" data-gi="'+gi+'">'
+        +'<span class="graphic-badge" style="background:'+gs.color+'">'+gs.name+'</span>'
+        +'<div class="graphic-dots">'+gdots+'</div>'
+      +'</div>'
+      +removeBtn
+      +'</div>';
+  }).join('');
+  return '<div class="card'+(a.wf==='ow'?' old-wf':'')+'">'
+    +'<div class="card-main" data-key="'+key+'" data-amud="'+amud+'">'
+      +'<div class="card-header"><span class="amud-label">'+amud+'</span>'
+      +'<span class="stage-badge" style="background:'+stage.color+'">'+stage.name+'</span></div>'
+      +'<div class="card-body">'
+        +'<div class="progress-track"><div class="progress-fill" style="width:'+pct+'%;background:'+stage.color+'"></div></div>'
+        +'<div class="stage-dots">'+dots+'</div>'
+      +'</div>'
+    +'</div>'
+    +'<div class="graphics-section">'
+      +'<div class="graphics-header"><span class="graphics-label">Graphics</span>'
+      +'<button class="add-graphic-btn" data-key="'+key+'" data-amud="'+amud+'">+ Add</button></div>'
+      +graphicsHTML
+    +'</div>'
+  +'</div>';
+}
+
+function renderGrid() {
+  const search = document.getElementById('search').value.trim().toLowerCase();
+  const filterVal = document.getElementById('filterStatus').value;
+  const m = masechta(currentKey);
+  const mixed = m.amudim.some(a => a.wf === 'ow') && m.amudim.some(a => a.wf === 'nw');
+  const visible = m.amudim.filter(a => {
+    if (search && a.id.toLowerCase().indexOf(search) === -1) return false;
+    if (filterVal !== '') {
+      const [w, i] = filterVal.split(':');
+      if (a.wf !== w || getS(currentKey, a.id).stage !== parseInt(i,10)) return false;
+    }
+    return true;
+  });
+  const grid = document.getElementById('grid');
+  if (visible.length === 0) {
+    grid.innerHTML = '<div class="no-results">No amudim match this filter.</div>';
+    renderStats(); return;
+  }
+  let html = '', lastWf = null;
+  visible.forEach(a => {
+    if (mixed && a.wf !== lastWf) {
+      html += '<div class="section-divider">'+m.name+' '+wfRange(m,a.wf)+' <span class="wf-tag">'+WORKFLOWS[a.wf].label+'</span></div>';
+      lastWf = a.wf;
+    }
+    html += cardHTML(a);
+  });
+  grid.innerHTML = html;
+  grid.querySelectorAll('.card-main').forEach(el =>
+    el.addEventListener('click', () => advanceMain(el.dataset.key, el.dataset.amud)));
+  grid.querySelectorAll('.graphic-advance').forEach(el =>
+    el.addEventListener('click', e => { e.stopPropagation(); advanceGraphic(el.dataset.key, el.dataset.amud, parseInt(el.dataset.gi,10)); }));
+  grid.querySelectorAll('.add-graphic-btn').forEach(el =>
+    el.addEventListener('click', e => { e.stopPropagation(); addGraphic(el.dataset.key, el.dataset.amud); }));
+  grid.querySelectorAll('.remove-graphic-btn').forEach(el =>
+    el.addEventListener('click', e => { e.stopPropagation(); removeGraphic(el.dataset.key, el.dataset.amud, parseInt(el.dataset.gi,10)); }));
+  renderStats();
+}
+
+buildTabs();
+buildLegend();
+buildFilter();
+listen(currentKey);
+renderGrid();
+document.getElementById('search').addEventListener('input', renderGrid);
+document.getElementById('filterStatus').addEventListener('change', renderGrid);
+</script>
+
+</body></html>
