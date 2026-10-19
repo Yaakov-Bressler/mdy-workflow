@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kerisos / Meilah / Kinim / Tamid / Midos — Workflow</title>
+<title>Kerisos / Meilah / Kinnim / Tamid / Middos — Workflow</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@400;700&display=swap" rel="stylesheet">
@@ -206,22 +206,22 @@ function buildRange(startDaf, startSide, endDaf, endSide, splits, workflow) {
 }
 
 /* Splits come from the perek breaks (הדרן עלך) in the mdy-library menukad text
-   of record. Kinim and Midos have no text in the library yet, so they are not split. */
+   of record. Kinnim and Middos have no text in the library yet, so they are not split. */
 const MASECHTOT = [
   { key:'kerisos_nw', label:'כריתות', name:'Kerisos',
     amudim: buildRange(2,'a',14,'b',['8b','11b'],'nw')
       .concat(buildRange(15,'a',28,'b',['17a','20b','23b'],'ow')) },
   { key:'meilah_nw',  label:'מעילה', name:'Meilah',
     amudim: buildRange(2,'a',22,'a',['8a','10b','18a','20a'],'nw') },
-  { key:'kinim_nw',   label:'קינים', name:'Kinim',
+  { key:'kinim_nw',   label:'קנים', name:'Kinnim',
     amudim: buildRange(22,'a',25,'a',[],'nw') },
   { key:'tamid_nw',   label:'תמיד', name:'Tamid',
     amudim: buildRange(25,'b',33,'b',['28b','30a','30b','32b','33a'],'nw') },
-  { key:'midos_nw',   label:'מידות', name:'Midos',
+  { key:'midos_nw',   label:'מדות', name:'Middos',
     amudim: buildRange(34,'a',37,'b',[],'nw') }
 ];
 
-/* Kinim starts at 22a, which is also Meilah's last amud — they are kept separate in the DB. */
+/* Kinnim starts at 22a, which is also Meilah's last amud — they are kept separate in the DB. */
 
 let currentKey = MASECHTOT[0].key;
 let state = {};      /* state[masechtaKey][amud] = {stage, graphics:[]} */
